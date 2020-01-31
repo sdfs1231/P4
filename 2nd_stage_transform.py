@@ -7,14 +7,14 @@ from MyNet import VGG
 from read_image import read_image,imshow
 from PIL import Image
 from gram_matrix import gram_matrix
-from MyNet2 import TransformNet
+from MyNet import TransformNet
 from tqdm import tqdm
 import torch.optim as optim
 from tools import Smooth,save_debug_img
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-#init device @ net @ dataset
+#init device @ net
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 vgg16 = models.vgg16(pretrained = True)
 vgg16 = VGG(vgg16.features[:23]).to(device).eval()
@@ -28,13 +28,14 @@ tensor_normalizer = transforms.Normalize(mean=cnn_normalization_mean, std=cnn_no
 style_weight = 1e5
 tv_weight = 1e-6
 content_weight = 1
+
+#init dataset
 data_transform = transforms.Compose([
     transforms.Resize(width),
     transforms.CenterCrop(width),
     transforms.ToTensor(),
     tensor_normalizer,
 ])
-
 dataset = torchvision.datasets.ImageFolder('/home/ypw/COCO/',transform=data_transform)
 data_loader = torch.utils.data.DataLoader(dataset,batch_size=b_size,shuffle=True)
 
